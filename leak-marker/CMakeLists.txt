@@ -1,4 +1,7 @@
-add_executable(marker main.cpp)
+add_executable(marker
+	main.cpp
+	marker_record_handler.h
+	marker_record_handler.cpp)
 
 target_include_directories(marker
     PRIVATE
