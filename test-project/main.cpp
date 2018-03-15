@@ -27,6 +27,7 @@ struct abc_empty_thing{};
 
 int main()
 {
+	struct in_func{} s;
 	cout << "Hello World!" << endl;
 
 	bobzyr();

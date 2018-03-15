@@ -2,6 +2,8 @@
 #include <string>
 
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Frontend/ASTConsumers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
@@ -10,51 +12,49 @@
 #include "clang/Tooling/Tooling.h"
 
 using namespace clang;
+using namespace clang::ast_matchers;
 using namespace clang::tooling;
 
 
-class MarkerASTVisitor : public RecursiveASTVisitor<MarkerASTVisitor> {
+class MarkerRecordHandler : public MatchFinder::MatchCallback {
 public:
-	MarkerASTVisitor(Rewriter &R) : rewriter(R) {}
+	static constexpr char bind_name[] = "rec";
 
-	bool VisitRecordDecl(RecordDecl *rec) {
-		std::string rec_name = rec->getNameAsString();
-		if (rec_name == "ns_thing")
-			llvm::errs() << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-		if (rec->isCompleteDefinition()) {
-//			rec = rec->getDefinition();
-			rec->getQualifiedNameAsString();
-			std::string rec_full_name = rec->getQualifiedNameAsString();
+	MarkerRecordHandler(Rewriter &R) : rewriter(R) {}
+
+	void run(const MatchFinder::MatchResult &Result) override {
+		if (const RecordDecl* rec = Result.Nodes.getNodeAs<RecordDecl>(bind_name)) {
+			if (!rec->isCompleteDefinition() || rec->isUnion())
+				return;
+
+			std::string mark_id = rec->getNameAsString();
+			std::string leak_mark = "LEAKMARK: " + rec->getQualifiedNameAsString();
 
 			std::stringstream ss;
-			ss << "\n/*>>>> >>>>*/  const char leakmark_"<< rec_name << "[] = \"LEAKMARK: " << rec_full_name << "\";\n";
+			ss << "\n/*>>>> >>>>*/  const char leakmark_" << mark_id << "[" << leak_mark.size()+1 << "] = \"" << leak_mark << "\";\n";
 			SourceLocation st = rec->getLocEnd().getLocWithOffset(-1);
 			rewriter.InsertTextAfterToken(st, ss.str());
 		}
-
-		return true;
 	}
 
 private:
 	Rewriter &rewriter;
 };
 
-// Implementation of the ASTConsumer interface for reading an AST produced
-// by the Clang parser.
 class MarkerASTConsumer : public ASTConsumer {
 public:
-	MarkerASTConsumer(Rewriter &rewriter) : visitor(rewriter) {}
+	MarkerASTConsumer(Rewriter &rewriter) : record_handler(rewriter) {
+		matcher.addMatcher(recordDecl().bind(record_handler.bind_name), &record_handler);
+	}
 
 	// Override the method that gets called for each parsed top-level declaration.
-	bool HandleTopLevelDecl(DeclGroupRef group) override {
-		for (Decl* d : group) {
-			visitor.TraverseDecl(d);
-		}
-		return true;
+	void HandleTranslationUnit(ASTContext &context) override {
+		matcher.matchAST(context);
 	}
 
 private:
-	MarkerASTVisitor visitor;
+	MarkerRecordHandler record_handler;
+	MatchFinder matcher;
 };
 
 // For each source file provided to the tool, a new FrontendAction is created.
@@ -66,14 +66,13 @@ public:
 		SourceManager &sm = rewriter.getSourceMgr();
 		llvm::errs() << "** EndSourceFileAction for: " << sm.getFileEntryForID(sm.getMainFileID())->getName() << "\n";
 
-		// Now emit the rewritten buffer.
 		rewriter.getEditBuffer(sm.getMainFileID()).write(llvm::outs());
 	}
 
 	std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &compiler, StringRef file) override {
 		llvm::errs() << "** Creating AST consumer for: " << file << "\n";
 		rewriter.setSourceMgr(compiler.getSourceManager(), compiler.getLangOpts());
-		return llvm::make_unique<MarkerASTConsumer>(rewriter);
+		return std::make_unique<MarkerASTConsumer>(rewriter);
 	}
 
 private:
@@ -81,9 +80,6 @@ private:
 };
 
 int main(int argc, const char **argv) {
-	//llvm::cl::OptionCategory category(std::string(argv[0]) + " options");
-	//CommonOptionsParser op(argc, argv, category);
-	//ClangTool Tool(op.getCompilations(), op.getSourcePathList());
 	std::string err;
 	auto db = CompilationDatabase::autoDetectFromDirectory(argc > 1 ? argv[1] : ".", err);
 	if (!db) {
@@ -92,6 +88,5 @@ int main(int argc, const char **argv) {
 	}
 	ClangTool tool(*db, db->getAllFiles());
 	MarkerFrontendAction a;
-//	return tool.run(newFrontendActionFactory<MarkerFrontendAction>().get());
 	return tool.run(newFrontendActionFactory<MarkerFrontendAction>().get());
 }

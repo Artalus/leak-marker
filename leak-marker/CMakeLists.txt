@@ -19,6 +19,7 @@ target_link_libraries(marker
 	clangRewrite
 	clangEdit
 	clangAST
+	clangASTMatchers
 	clangLex
 	clangBasic
 	clangRewriteFrontend
