@@ -11,14 +11,26 @@ using namespace clang::ast_matchers;
 using namespace clang::tooling;
 
 namespace {
+struct leak_mark {
+	const std::string
+	unifier,
+	var_name,
+	text,
+	replacement;
+	leak_mark(const RecordDecl &rec)
+	        : unifier(rec.getNameAsString())
+	        , var_name("leakmark_" + unifier)
+	        , text("LEAKMARK: " + rec.getQualifiedNameAsString())
+	        , replacement(format_replacement(var_name, text))
+	{}
 
-std::string format_leak_mark(const RecordDecl &rec) {
-	const string mark_id = rec.getNameAsString();
-	const string leak_mark = "LEAKMARK: " + rec.getQualifiedNameAsString();
-	stringstream ss;
-	ss << "\n/*>>>> >>>>*/  const char leakmark_" << mark_id << "[" << leak_mark.size()+1 << "] = \"" << leak_mark << "\";\n";
-	return ss.str();
-}
+private:
+	static std::string format_replacement(const std::string &var_name, const std::string &text) {
+		stringstream ss;
+		ss << "\n/*>>>> >>>>*/  const char " << var_name << "[" << text.size()+1 << "] = \"" << text << "\";\n";
+		return ss.str();
+	}
+};
 
 }
 
@@ -40,11 +52,22 @@ void MarkerRecordHandler::run(const MatchFinder::MatchResult &result) {
 		if (sm->isInExternCSystemHeader(insert_pos) || sm->isInSystemHeader(insert_pos))
 			return;
 
-		auto f = sm->getFilename(insert_pos);
 
-		auto &r = replacements_map[f];
+		leak_mark mark(*rec);
 
-		Replacement rep(*sm, insert_pos, 0, format_leak_mark(*rec));
+		// this ignores inserting marker into already edited records
+		if (std::find_if(rec->field_begin(), rec->field_end(),
+		                 [&mark](FieldDecl *f) { return f->getNameAsString() == mark.var_name; })
+		    != rec->field_end()) {
+			llvm::errs() << mark.text << " is already present\n";
+			return;
+		}
+
+		Replacement rep(*sm, insert_pos, 0, mark.replacement);
+
+		auto &r = replacements_map[sm->getFilename(insert_pos)];
+
+		// this ignores already made replacements in headers included many times
 		if ( find(r.begin(), r.end(), rep) == r.end() ) {
 			if (auto e = r.add(rep)) {
 				throw e;
