@@ -9,14 +9,9 @@ using namespace clang::ast_matchers;
 using namespace clang::tooling;
 
 int main(int argc, const char **argv) try {
-	std::string err = "errmsg??";
-	auto db = CompilationDatabase::autoDetectFromDirectory(argc > 1 ? argv[1] : ".", err);
-	if (!db) {
-		llvm::errs() << "Whoops! Couldn't load compilation database:\n" << err << '\n';
-		return 1;
-	}
-
-	RefactoringTool tool(*db, db->getAllFiles());
+	llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
+	CommonOptionsParser op(argc, argv, ToolingSampleCategory);
+	RefactoringTool tool(op.getCompilations(), op.getSourcePathList());
 
 	MarkerRecordHandler record_handler(tool.getReplacements());
 
@@ -44,7 +39,9 @@ int main(int argc, const char **argv) try {
 	// contents to stdout.
 	for (auto i = rewrite.buffer_begin(), e = rewrite.buffer_end(); i != e; ++i) {
 		const FileEntry *entry = sm.getFileEntryForID(i->first);
-		llvm::outs() << "Rewrite buffer for file: " << entry->getName() << "\n";
+		if (i != rewrite.buffer_begin())
+			llvm::outs() << "--8<--\n";
+		llvm::outs() << entry->getName() << "\n";
 		i->second.write(llvm::outs());
 	}
 
