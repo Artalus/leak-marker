@@ -3,11 +3,6 @@ add_executable(marker
 	marker_record_handler.h
 	marker_record_handler.cpp)
 
-target_include_directories(marker
-    PRIVATE
-    /usr/lib/clang/5.0.1/include
-)
-
 target_link_libraries(marker
 	clangFrontendTool
 	clangFrontend
