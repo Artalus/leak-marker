@@ -9,7 +9,7 @@ struct ns_thing {
 	uint8_t r[4];
 };
 
-std::vector<std::unique_ptr<cpp_thing>> rur;
+std::vector<std::unique_ptr<cpp_thing>> cpp_thing_container;
 }
 
 struct cpp_thing {
@@ -27,6 +27,6 @@ header_thing::header_thing()
 	static int zaz = 0;
 	if (++zaz % 13 == 0) {
 		std::cout << "adding whatever\n";
-		rur.emplace_back(std::make_unique<cpp_thing>());
+		cpp_thing_container.emplace_back(std::make_unique<cpp_thing>());
 	}
 }

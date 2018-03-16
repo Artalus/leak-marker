@@ -1,36 +1,31 @@
 #include <iostream>
-#include "some.h"
 #include <thread>
 #include <chrono>
 
+#include "some.h"
+
 using namespace std;
 
-int lobzyr() {
+int count() {
 	if (true) return 20000;
 	else return 10000;
 }
 
-void bobzyr() {
-	std::vector<header_thing> sus;
+std::vector<header_thing> header_thing_container;
 
-	for (int i = 0; i < lobzyr(); ++i)
-		sus.push_back({});
-}
+void start_leak() {
 
-namespace a {
-namespace b {
-namespace c {
-struct abc_empty_thing{};
-}
-}
+	for (int i = 0; i < count(); ++i)
+		header_thing_container.push_back({});
 }
 
 int main()
 {
 	struct in_func{} s;
+
 	cout << "Hello World!" << endl;
 
-	bobzyr();
+	start_leak();
 
 	std::this_thread::sleep_for(std::chrono::minutes(2));
 	return 0;
