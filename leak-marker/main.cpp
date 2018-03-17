@@ -11,14 +11,14 @@ OptionCategory marker_category{"marker options"};
 
 //TODO: why does it cuts "output e" if the string is not a separate variable? o_O
 const auto s = std::string("output edited files to stdout, separating buffers by ") + MarkerTool::output_delimiter;
-opt<bool> show_output{"-show-output", desc(s),
+opt<bool> show_output{"show-output", desc(s),
 	        cat(marker_category)};
-alias show_output_a{"s", desc("alias for --show-output"), aliasopt(show_output), cat(marker_category)};
+alias show_output_a{"s", desc("alias for -show-output"), aliasopt(show_output), cat(marker_category)};
 
-opt<bool> overwrite{"-overwrite", desc("write tool output directly to parsed files"), cat(marker_category)};
-alias overwrite_a{"o", desc("alias for --overwrite"), aliasopt(overwrite), cat(marker_category)};
+opt<bool> overwrite{"overwrite", desc("write tool output directly to parsed files"), cat(marker_category)};
+alias overwrite_a{"o", desc("alias for -overwrite"), aliasopt(overwrite), cat(marker_category)};
 
-opt<bool> no_confirmation{"-no-confirmation", desc("do not ask for user confirmation when --overwrite is specified"),
+opt<bool> no_confirmation{"no-confirmation", desc("do not ask for user confirmation when --overwrite is specified"),
 	        cat(marker_category)};
 
 opt<std::string> compilation_database{"p", desc("path to directory containing project compilation database (compiler_commands.json)"),
