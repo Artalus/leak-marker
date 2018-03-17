@@ -15,7 +15,7 @@ def go(args):
 		os.chdir(args[1])
 		return
 
-	process = Popen(args, stdout=PIPE)
+	process = Popen(args, stdout=PIPE, stderr=PIPE)
 	(output, err) = process.communicate()
 	exit_code = process.wait()
 	if exit_code:
@@ -50,7 +50,7 @@ try:
 	go('cmake ..')
 	go('cmake --build .')
 	g = ' '.join(glob('../sep/**/*.cpp', recursive=True))
-	marked = go('marker -s ' + g)
+	marked = go('marker -s -o -no-confirmation ' + g)
 	result = list_to_dict( marked.split('--8<--\n') )
 	for fname, res in result.items():
 		test_file(fname, res)
@@ -66,8 +66,17 @@ try:
 	print('{} contain diffs'.format(len(failed)))
 	for f in failed.keys():
 		print(f)
-	sys.exit(len(failed))
+
+	cmake_failed = (False, '')
+	try:
+		go('cmake --build .')
+	except Exception as e:
+		cmake_failed = (True, str(e))
+	if cmake_failed[0]:
+		print('CMake rebuild after instrumenting failed (see build logs)')
+	go('git checkout HEAD -- ' + ' '.join(list(failed.keys()) + ok))
+	sys.exit(len(failed) + 1 if cmake_failed[0] else 0)
 
 except Exception as e:
 	print(e)
-	sys.exit(1)
+	sys.exit(-1)
