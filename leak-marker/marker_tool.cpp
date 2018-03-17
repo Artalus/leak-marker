@@ -25,7 +25,7 @@ void write_to_file(const StringRef &filename, clang::RewriteBuffer &buffer) {
 
 }
 
-MarkerTool::MarkerTool(std::string db_path, llvm::ArrayRef<std::string> input_filenames,
+MarkerTool::MarkerTool(std::string db_path, std::vector<std::string> input_filenames,
                        bool show_output, bool overwrite, bool no_confirmation) {
 	this->show_output = show_output;
 	this->overwrite = overwrite;
@@ -37,7 +37,7 @@ MarkerTool::MarkerTool(std::string db_path, llvm::ArrayRef<std::string> input_fi
 		throw std::runtime_error(err);
 
 	this->source_files = input_filenames.empty()
-	        ? llvm::ArrayRef<std::string>(db->getAllFiles())
+	        ? db->getAllFiles()
 	        : input_filenames;
 	tool = std::make_unique<RefactoringTool>(*db, source_files);
 }

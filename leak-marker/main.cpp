@@ -35,6 +35,10 @@ int main(int argc, const char **argv) try {
 	                        "\n  If no positional arguments are specified, the tool is applied to each file"
 	                        "\n  in compilation database.\n");
 
+	if (!show_output && !overwrite) {
+		PrintHelpMessage();
+		return 0;
+	}
 
 	MarkerTool tool(compilation_database, input_filenames, show_output, overwrite, no_confirmation);
 
