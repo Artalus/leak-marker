@@ -1,14 +1,14 @@
 class cl {
 	int i;
 	double d;
-/*>>>> >>>>*/  const char leakmark_cl[13] = "LEAKMARK: cl";
+/*>>>> >>>>*/  char leakmark_cl[13] = "LEAKMARK: cl";
 };
 
 struct st {
 	int i;
 	double d;
 	cl c;
-/*>>>> >>>>*/  const char leakmark_st[13] = "LEAKMARK: st";
+/*>>>> >>>>*/  char leakmark_st[13] = "LEAKMARK: st";
 };
 
 union un {

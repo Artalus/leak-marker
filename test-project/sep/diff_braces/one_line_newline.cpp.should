@@ -1,4 +1,4 @@
 struct one_line_newline
 { int i; double d;
-/*>>>> >>>>*/  const char leakmark_one_line_next[24] = "LEAKMARK: one_line_next";
+/*>>>> >>>>*/  char leakmark_one_line_next[24] = "LEAKMARK: one_line_next";
 };

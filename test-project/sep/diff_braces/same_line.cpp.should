@@ -1,5 +1,5 @@
 struct same_line {
 	int i;
 	double d;
-/*>>>> >>>>*/  const char leakmark_same_line[20] = "LEAKMARK: same_line";
+/*>>>> >>>>*/  char leakmark_same_line[20] = "LEAKMARK: same_line";
 };

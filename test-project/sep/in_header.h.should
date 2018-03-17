@@ -4,5 +4,5 @@ struct in_header {
 	int integer;
 	double real;
 	const char* str;
-/*>>>> >>>>*/  const char leakmark_in_header[20] = "LEAKMARK: in_header";
+/*>>>> >>>>*/  char leakmark_in_header[20] = "LEAKMARK: in_header";
 };

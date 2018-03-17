@@ -2,7 +2,7 @@ static int func(double d) {
 	struct in_func {
 		int i;
 		double d;
-/*>>>> >>>>*/  const char leakmark_in_func[18] = "LEAKMARK: in_func";
+/*>>>> >>>>*/  char leakmark_in_func[18] = "LEAKMARK: in_func";
 	};
 	return 42;
 };

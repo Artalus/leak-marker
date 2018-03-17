@@ -1,5 +1,5 @@
 struct same_line_w_spaces     {
 	int i;
 	double d;
-/*>>>> >>>>*/  const char leakmark_same_line_w_spaces[29] = "LEAKMARK: same_line_w_spaces";
+/*>>>> >>>>*/  char leakmark_same_line_w_spaces[29] = "LEAKMARK: same_line_w_spaces";
 };

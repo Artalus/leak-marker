@@ -4,7 +4,7 @@ struct in_named_ns {
 	int a,b,c;
 	int x;
 	double z;
-/*>>>> >>>>*/  const char leakmark_in_named_ns[29] = "LEAKMARK: named::in_named_ns";
+/*>>>> >>>>*/  char leakmark_in_named_ns[29] = "LEAKMARK: named::in_named_ns";
 };
 
 }

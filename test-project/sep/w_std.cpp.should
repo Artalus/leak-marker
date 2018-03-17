@@ -9,7 +9,7 @@ struct my_struct {
 	bool operator<(const my_struct &) {
 		return true;
 	}
-/*>>>> >>>>*/  const char leakmark_my_struct[20] = "LEAKMARK: my_struct";
+/*>>>> >>>>*/  char leakmark_my_struct[20] = "LEAKMARK: my_struct";
 };
 
 std::vector<my_struct> v;
@@ -20,7 +20,7 @@ struct wrapper {
 	void f() {
 		std::sort(v.begin(), v.end());
 	}
-/*>>>> >>>>*/  const char leakmark_wrapper[18] = "LEAKMARK: wrapper";
+/*>>>> >>>>*/  char leakmark_wrapper[18] = "LEAKMARK: wrapper";
 };
 
 

@@ -23,7 +23,7 @@ struct leak_mark {
 	        , text("LEAKMARK: " + rec.getQualifiedNameAsString())
 	{
 		stringstream ss;
-		ss << "/*>>>> >>>>*/  const char " << var_name << "[" << text.size()+1 << "] = \"" << text << "\";\n";
+		ss << "/*>>>> >>>>*/  char " << var_name << "[" << text.size()+1 << "] = \"" << text << "\";\n";
 		replacement = ss.str();
 	}
 };

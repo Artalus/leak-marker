@@ -5,12 +5,12 @@ struct outer {
 		struct in_multi_struct {
 			int i;
 			double d;
-/*>>>> >>>>*/  const char leakmark_in_multi_struct[40] = "LEAKMARK: outer::inner::in_multi_struct";
+/*>>>> >>>>*/  char leakmark_in_multi_struct[40] = "LEAKMARK: outer::inner::in_multi_struct";
 		};
 		double d;
-/*>>>> >>>>*/  const char leakmark_inner[23] = "LEAKMARK: outer::inner";
+/*>>>> >>>>*/  char leakmark_inner[23] = "LEAKMARK: outer::inner";
 	};
 
 	double d;
-/*>>>> >>>>*/  const char leakmark_outer[16] = "LEAKMARK: outer";
+/*>>>> >>>>*/  char leakmark_outer[16] = "LEAKMARK: outer";
 };

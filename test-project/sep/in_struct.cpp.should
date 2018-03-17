@@ -3,8 +3,8 @@ struct outer {
 	struct in_struct {
 		int i;
 		double d;
-/*>>>> >>>>*/  const char leakmark_in_struct[27] = "LEAKMARK: outer::in_struct";
+/*>>>> >>>>*/  char leakmark_in_struct[27] = "LEAKMARK: outer::in_struct";
 	};
 	double d;
-/*>>>> >>>>*/  const char leakmark_outer[16] = "LEAKMARK: outer";
+/*>>>> >>>>*/  char leakmark_outer[16] = "LEAKMARK: outer";
 };
