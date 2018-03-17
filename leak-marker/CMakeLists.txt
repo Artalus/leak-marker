@@ -1,7 +1,9 @@
 add_executable(marker
 	main.cpp
 	marker_record_handler.h
-	marker_record_handler.cpp)
+	marker_record_handler.cpp
+	marker_tool.h
+	marker_tool.cpp)
 
 target_link_libraries(marker
 	clangFrontendTool

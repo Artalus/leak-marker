@@ -1,52 +1,50 @@
-#include <clang/Frontend/TextDiagnosticPrinter.h>
-#include <clang/Rewrite/Core/Rewriter.h>
-#include <clang/Tooling/CommonOptionsParser.h>
+#include <llvm/Support/Error.h>
+#include <llvm/Support/CommandLine.h>
 
-#include "marker_record_handler.h"
+#include "marker_tool.h"
 
-using namespace clang;
-using namespace clang::ast_matchers;
-using namespace clang::tooling;
+namespace {
+
+using namespace llvm::cl;
+
+OptionCategory marker_category{"marker options"};
+
+//TODO: why does it cuts "output e" if the string is not a separate variable? o_O
+const auto s = std::string("output edited files to stdout, separating buffers by ") + MarkerTool::output_delimiter;
+opt<bool> show_output{"-show-output", desc(s),
+	        cat(marker_category)};
+alias show_output_a{"s", desc("alias for --show-output"), aliasopt(show_output), cat(marker_category)};
+
+opt<bool> overwrite{"-overwrite", desc("write tool output directly to parsed files"), cat(marker_category)};
+alias overwrite_a{"o", desc("alias for --overwrite"), aliasopt(overwrite), cat(marker_category)};
+
+opt<bool> no_confirmation{"-no-confirmation", desc("do not ask for user confirmation when --overwrite is specified"),
+	        cat(marker_category)};
+
+opt<std::string> compilation_database{"p", desc("path to directory containing project compilation database (compiler_commands.json)"),
+	        init("."), cat(marker_category)};
+list<std::string> input_filenames{Positional, desc("[<source0> [... <sourceN>]]"), ZeroOrMore};
+
+}
 
 int main(int argc, const char **argv) try {
-	llvm::cl::OptionCategory ToolingSampleCategory("Tooling Sample");
-	CommonOptionsParser op(argc, argv, ToolingSampleCategory);
-	RefactoringTool tool(op.getCompilations(), op.getSourcePathList());
+	HideUnrelatedOptions(marker_category);
+	ParseCommandLineOptions(argc, argv,
+	                        "\n  This tool is used to insert a const char[] leak mark to each struct in project."
+	                        "\n  Use positional arguments to specify files which should be instrumented."
+	                        "\n  If no positional arguments are specified, the tool is applied to each file"
+	                        "\n  in compilation database.\n");
 
-	MarkerRecordHandler record_handler(tool.getReplacements());
 
-	MatchFinder finder;
-	finder.addMatcher(recordDecl().bind(MarkerRecordHandler::bind_name), &record_handler);
+	MarkerTool tool(compilation_database, input_filenames, show_output, overwrite, no_confirmation);
 
-	if (int result = tool.run(newFrontendActionFactory(&finder).get())) {
-		llvm::errs() << "Whoops! tool.run() returned " << result << '\n';
-		return result;
-	}
-
-	// We need a SourceManager to set up the Rewriter.
-	IntrusiveRefCntPtr<DiagnosticOptions> diag_opts = new DiagnosticOptions();
-	DiagnosticsEngine diagnostics(
-	                        IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
-	                        &*diag_opts,
-	                        new TextDiagnosticPrinter(llvm::errs(), &*diag_opts), true);
-	SourceManager sm(diagnostics, tool.getFiles());
-
-	// Apply all replacements to a rewriter.
-	Rewriter rewrite(sm, LangOptions());
-	tool.applyAllReplacements(rewrite);
-
-	// Query the rewriter for all the files it has rewritten, dumping their new
-	// contents to stdout.
-	for (auto i = rewrite.buffer_begin(), e = rewrite.buffer_end(); i != e; ++i) {
-		const FileEntry *entry = sm.getFileEntryForID(i->first);
-		if (i != rewrite.buffer_begin())
-			llvm::outs() << "--8<--\n";
-		llvm::outs() << entry->getName() << "\n";
-		i->second.write(llvm::outs());
-	}
+	tool.rewrite();
 
 	return 0;
 } catch (const llvm::Error &) {
 	llvm::errs() << "Whoops! Error. How do I handle them in LLVM?\n";
+	return 1;
+} catch (const std::exception &e) {
+	llvm::errs() << e.what() << '\n';
 	return 1;
 }
