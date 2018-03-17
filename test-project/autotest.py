@@ -50,7 +50,7 @@ try:
 	go('cmake ..')
 	go('cmake --build .')
 	g = ' '.join(glob('../sep/**/*.cpp', recursive=True))
-	marked = go('marker ' + g)
+	marked = go('marker -s ' + g)
 	result = list_to_dict( marked.split('--8<--\n') )
 	for fname, res in result.items():
 		test_file(fname, res)
