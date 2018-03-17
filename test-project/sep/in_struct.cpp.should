@@ -1,0 +1,10 @@
+struct outer {
+	int i;
+	struct in_struct {
+		int i;
+		double d;
+/*>>>> >>>>*/  const char leakmark_in_struct[27] = "LEAKMARK: outer::in_struct";
+	};
+	double d;
+/*>>>> >>>>*/  const char leakmark_outer[16] = "LEAKMARK: outer";
+};

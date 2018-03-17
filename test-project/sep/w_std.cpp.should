@@ -1,0 +1,30 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+struct my_struct {
+	int i;
+	double d;
+
+	bool operator<(const my_struct &) {
+		return true;
+	}
+/*>>>> >>>>*/  const char leakmark_my_struct[20] = "LEAKMARK: my_struct";
+};
+
+std::vector<my_struct> v;
+
+struct wrapper {
+	std::vector<decltype(v)> b;
+
+	void f() {
+		std::sort(v.begin(), v.end());
+	}
+/*>>>> >>>>*/  const char leakmark_wrapper[18] = "LEAKMARK: wrapper";
+};
+
+
+int f() {
+	std::sort(v.begin(), v.end());
+	return 1;
+}

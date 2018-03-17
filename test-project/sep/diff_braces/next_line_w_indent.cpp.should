@@ -1,0 +1,6 @@
+struct next_line_w_indent
+    {
+	int i;
+	double d;
+/*>>>> >>>>*/  const char leakmark_next_line_w_indent[29] = "LEAKMARK: next_line_w_indent";
+    };

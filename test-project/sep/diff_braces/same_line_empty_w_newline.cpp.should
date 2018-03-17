@@ -1,0 +1,3 @@
+struct same_line_empty_w_newline {
+/*>>>> >>>>*/  const char leakmark_same_line_empty_w_newline[36] = "LEAKMARK: same_line_empty_w_newline";
+};

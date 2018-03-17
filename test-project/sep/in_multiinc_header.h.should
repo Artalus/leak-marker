@@ -1,0 +1,8 @@
+#pragma once
+
+struct in_multiinc_header {
+	int integer;
+	double real;
+	const char* str;
+/*>>>> >>>>*/  const char leakmark_in_multiinc_header[29] = "LEAKMARK: in_multiinc_header";
+};

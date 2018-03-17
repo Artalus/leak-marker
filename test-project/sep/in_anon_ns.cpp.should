@@ -1,0 +1,7 @@
+namespace {
+struct in_ns {
+	int i;
+	double d;
+/*>>>> >>>>*/  const char leakmark_in_ns[39] = "LEAKMARK: (anonymous namespace)::in_ns";
+};
+}

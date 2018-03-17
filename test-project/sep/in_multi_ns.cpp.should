@@ -1,0 +1,11 @@
+namespace a {
+namespace b {
+    namespace c {
+	    struct in_multi_ns {
+			int i;
+			double d;
+/*>>>> >>>>*/  const char leakmark_in_multi_ns[31] = "LEAKMARK: a::b::c::in_multi_ns";
+		};
+	}
+}
+}

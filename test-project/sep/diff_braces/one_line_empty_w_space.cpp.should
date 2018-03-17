@@ -1,0 +1,3 @@
+struct one_line_empty_w_space { 
+/*>>>> >>>>*/  const char leakmark_one_line_empty_w_space[33] = "LEAKMARK: one_line_empty_w_space";
+};

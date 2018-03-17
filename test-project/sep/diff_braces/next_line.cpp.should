@@ -1,0 +1,6 @@
+struct next_line
+{
+	int i;
+	double d;
+/*>>>> >>>>*/  const char leakmark_next_line[20] = "LEAKMARK: next_line";
+};

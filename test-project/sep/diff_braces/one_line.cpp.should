@@ -1,0 +1,3 @@
+struct one_line { int i; double d;
+/*>>>> >>>>*/  const char leakmark_one_line[19] = "LEAKMARK: one_line";
+ };

@@ -1,0 +1,3 @@
+struct one_line_empty {
+/*>>>> >>>>*/  const char leakmark_one_line_empty[25] = "LEAKMARK: one_line_empty";
+};
