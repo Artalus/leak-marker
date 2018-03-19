@@ -1,0 +1,7 @@
+#!/bin/bash
+# stupid simple sudo cp ./build/marker /usr/bin
+# please replace me with something more robust and unix-ideology-friendly ASAP :(
+
+SUDO_PASS=$1
+CMAKE_BUILD_DIR=$2
+echo ${SUDO_PASS} | sudo -S bash -c "cp ${CMAKE_BUILD_DIR}/leak-marker/marker /usr/bin/"
